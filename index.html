@@ -1,8 +1,3 @@
-Here is the fully cleaned and updated HTML file.
-What was fixed and added:
- * Removed the accidental repetition: The duplicated HTML body code at the bottom has been entirely cleaned up so the document is structured correctly.
- * Replaced Upcoming Schedule with a Calendar View: The upcoming shifts list has been transformed into a sleek, responsive monthly/upcoming grid calendar showing each date as a distinct box, complete with the appropriate shift icon (sun, moon, or coffee/couch) and color theme.
- * Maintained all core features: Real-time clock, dark/light mode toggles, 3-year tenure tracking from August 28, 2025 to August 28, 2028, and shift metrics remain fully functional.
 <!DOCTYPE html>
 <html lang="en" class="light">
 <head>
@@ -63,11 +58,11 @@ What was fixed and added:
 
     <div class="max-w-6xl w-full mx-auto space-y-6">
         
-        <!-- Header: Clock, Date & Theme Toggle -->
+        <!-- Header: Dynamic Greeting, Date & Theme Toggle -->
         <header class="flat-card p-6 flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-4 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700">
             <div class="flex-1">
                 <div class="flex items-center justify-center md:justify-start gap-4 mb-1">
-                    <h1 class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">My Dashboard</h1>
+                    <h1 id="greeting-header" class="text-2xl font-black tracking-tight text-slate-900 dark:text-white">Good day, Dr Akhil Raj S</h1>
                     <button id="theme-toggle" class="p-2 rounded border border-slate-300 dark:border-slate-600 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors focus:outline-none">
                         <i id="theme-icon" class="fas fa-moon"></i>
                     </button>
@@ -118,14 +113,29 @@ What was fixed and added:
             </section>
 
             <!-- Today's Shift -->
-            <section class="flat-card p-6 flex flex-col justify-center items-center text-center bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700">
-                <h2 class="text-sm font-black mb-4 uppercase tracking-widest text-slate-500 dark:text-slate-400">Today's Shift</h2>
+            <section class="flat-card p-6 flex flex-col justify-between items-center text-center bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700">
+                <h2 class="text-sm font-black mb-2 uppercase tracking-widest text-slate-500 dark:text-slate-400">Today's Shift</h2>
                 
-                <div id="today-shift-block" class="w-full py-10 rounded flex flex-col items-center justify-center border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 transition-colors">
-                    <div id="today-shift-icon" class="text-5xl mb-4 text-slate-400 dark:text-slate-500">
+                <div id="today-shift-block" class="w-full py-6 px-4 rounded flex flex-col items-center justify-center border-2 border-slate-300 dark:border-slate-600 bg-slate-50 dark:bg-slate-800 transition-colors">
+                    <div id="today-shift-icon" class="text-4xl mb-2 text-slate-400 dark:text-slate-500">
                         <i class="fas fa-spinner fa-spin"></i>
                     </div>
-                    <div id="today-shift-name" class="text-3xl font-black tracking-tight text-slate-700 dark:text-slate-300">Loading...</div>
+                    <div id="today-shift-name" class="text-2xl font-black tracking-tight text-slate-700 dark:text-slate-300">Loading...</div>
+                </div>
+
+                <!-- Daily Countdown & Day Progress Bar -->
+                <div class="w-full mt-4 space-y-2 text-left">
+                    <div class="flex justify-between items-center text-xs font-bold text-slate-600 dark:text-slate-400">
+                        <span>Day Remaining:</span>
+                        <span id="day-countdown" class="font-black tabular-nums text-slate-900 dark:text-slate-100">00h 00m 00s</span>
+                    </div>
+                    <div class="flat-progress-bg h-3 w-full bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-600">
+                        <div id="day-progress-bar" class="flat-progress-fill w-0 bg-blue-600 dark:bg-blue-500"></div>
+                    </div>
+                    <div class="flex justify-between text-[10px] font-bold uppercase text-slate-400 dark:text-slate-500">
+                        <span>Passed: <span id="day-percent-text">0%</span></span>
+                        <span>24h Cycle</span>
+                    </div>
                 </div>
             </section>
         </div>
@@ -199,21 +209,34 @@ What was fixed and added:
                 </div>
             </section>
 
-            <!-- Upcoming Schedule Calendar -->
-            <section class="flat-card p-6 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 flex flex-col">
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-base font-black uppercase tracking-widest text-slate-900 dark:text-slate-100">Schedule Calendar</h2>
-                    <span id="calendar-month-year" class="text-xs font-bold px-3 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300">--</span>
-                </div>
-                
-                <!-- Weekday Headers -->
-                <div class="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-black uppercase text-slate-400 dark:text-slate-500">
-                    <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
-                </div>
+            <!-- Upcoming Schedule Calendar with Monthly Progress Bar -->
+            <section class="flat-card p-6 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-base font-black uppercase tracking-widest text-slate-900 dark:text-slate-100">Schedule Calendar</h2>
+                        <span id="calendar-month-year" class="text-xs font-bold px-3 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300">--</span>
+                    </div>
 
-                <!-- Calendar Grid Container -->
-                <div id="calendar-grid" class="grid grid-cols-7 gap-2 flex-1">
-                    <!-- Populated dynamically by JS -->
+                    <!-- Monthly Completion Progress Bar -->
+                    <div class="mb-5 space-y-1">
+                        <div class="flex justify-between text-xs font-bold text-slate-600 dark:text-slate-400">
+                            <span>Month Progress</span>
+                            <span id="month-percent-text" class="text-blue-700 dark:text-blue-400 font-black">0%</span>
+                        </div>
+                        <div class="flat-progress-bg h-2.5 w-full bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-600">
+                            <div id="month-progress-bar" class="flat-progress-fill w-0 bg-blue-600 dark:bg-blue-500"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Weekday Headers -->
+                    <div class="grid grid-cols-7 gap-2 mb-2 text-center text-xs font-black uppercase text-slate-400 dark:text-slate-500">
+                        <div>Su</div><div>Mo</div><div>Tu</div><div>We</div><div>Th</div><div>Fr</div><div>Sa</div>
+                    </div>
+
+                    <!-- Calendar Grid Container -->
+                    <div id="calendar-grid" class="grid grid-cols-7 gap-2">
+                        <!-- Populated dynamically by JS -->
+                    </div>
                 </div>
             </section>
         </div>
@@ -244,17 +267,50 @@ What was fixed and added:
             }
         });
 
-        // --- 2. Real-Time Clock ---
-        function updateClock() {
+        // --- 2. Dynamic Greeting & Real-Time Clock & Daily Countdown ---
+        function updateClockAndCountdown() {
             const now = new Date();
+            
+            // Dynamic Greeting based on time of day
+            const hours = now.getHours();
+            let greeting = "Good morning, Dr Akhil Raj S";
+            if (hours >= 12 && hours < 17) {
+                greeting = "Good afternoon, Dr Akhil Raj S";
+            } else if (hours >= 17) {
+                greeting = "Good evening, Dr Akhil Raj S";
+            }
+            document.getElementById('greeting-header').textContent = greeting;
+
+            // Clock Output
             const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
             document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', timeOptions);
             
             const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', dateOptions);
+
+            // Daily Progress Calculation & Countdown
+            const secondsPassed = (now.getHours() * 3600) + (now.getMinutes() * 60) + now.getSeconds();
+            const totalSecondsInDay = 86400;
+            const secondsRemaining = totalSecondsInDay - secondsPassed;
+            
+            const dayPercent = ((secondsPassed / totalSecondsInDay) * 100).toFixed(1);
+            document.getElementById('day-progress-bar').style.width = `${dayPercent}%`;
+            document.getElementById('day-percent-text').textContent = `${dayPercent}%`;
+
+            const remHours = Math.floor(secondsRemaining / 3600);
+            const remMinutes = Math.floor((secondsRemaining % 3600) / 60);
+            const remSeconds = secondsRemaining % 60;
+
+            const pad = (num) => String(num).padStart(2, '0');
+            document.getElementById('day-countdown').textContent = `${pad(remHours)}h ${pad(remMinutes)}m ${pad(remSeconds)}s`;
+
+            // Dynamic Fill for Today's Box in Calendar
+            const todayFill = document.getElementById('today-progress-fill');
+            if (todayFill) {
+                todayFill.style.height = `${dayPercent}%`;
+            }
         }
-        setInterval(updateClock, 1000);
-        updateClock();
+        setInterval(updateClockAndCountdown, 1000);
 
         // --- 3. Configuration & State ---
         const JOIN_DATE = new Date(2025, 7, 28); 
@@ -357,15 +413,15 @@ What was fixed and added:
             const todayShift = getShiftForDate(today);
             
             document.getElementById('today-shift-name').textContent = todayShift.name;
-            document.getElementById('today-shift-name').className = `text-3xl font-black tracking-tight ${todayShift.colorClass}`;
+            document.getElementById('today-shift-name').className = `text-2xl font-black tracking-tight ${todayShift.colorClass}`;
             
             document.getElementById('today-shift-icon').innerHTML = `<i class="fas ${todayShift.icon}"></i>`;
-            document.getElementById('today-shift-icon').className = `text-5xl mb-4 ${todayShift.colorClass}`;
+            document.getElementById('today-shift-icon').className = `text-4xl mb-2 ${todayShift.colorClass}`;
             
             const block = document.getElementById('today-shift-block');
-            block.className = `w-full py-10 rounded flex flex-col items-center justify-center border-2 transition-colors ${todayShift.bgClass} ${todayShift.borderClass}`;
+            block.className = `w-full py-6 px-4 rounded flex flex-col items-center justify-center border-2 transition-colors ${todayShift.bgClass} ${todayShift.borderClass}`;
 
-            // --- Render Calendar Grid (Current Month) ---
+            // --- Render Calendar Grid & Month Completion ---
             const year = today.getFullYear();
             const month = today.getMonth();
             
@@ -375,6 +431,16 @@ What was fixed and added:
             const firstDayIndex = new Date(year, month, 1).getDay();
             const totalDaysInMonth = new Date(year, month + 1, 0).getDate();
             
+            // Month completion progress calculation
+            const currentDayNumber = today.getDate();
+            const secondsPassedToday = (today.getHours() * 3600) + (today.getMinutes() * 60) + today.getSeconds();
+            const monthProgressPercent = (((currentDayNumber - 1 + (secondsPassedToday / 86400)) / totalDaysInMonth) * 100).toFixed(1);
+            
+            document.getElementById('month-percent-text').textContent = `${monthProgressPercent}%`;
+            setTimeout(() => {
+                document.getElementById('month-progress-bar').style.width = `${monthProgressPercent}%`;
+            }, 100);
+
             const calendarGrid = document.getElementById('calendar-grid');
             calendarGrid.innerHTML = '';
 
@@ -389,17 +455,29 @@ What was fixed and added:
                 const shift = getShiftForDate(currentCellDate);
                 const isToday = stripTime(currentCellDate).getTime() === stripTime(today).getTime();
 
-                calendarGrid.innerHTML += `
-                    <div class="p-2 rounded border flex flex-col items-center justify-between text-center transition-colors ${shift.bgClass} ${shift.borderClass} ${isToday ? 'ring-2 ring-blue-600 dark:ring-blue-400 font-bold' : ''}" title="${shift.name}">
-                        <span class="text-xs font-black text-slate-700 dark:text-slate-300">${day}</span>
-                        <i class="fas ${shift.icon} ${shift.colorClass} text-sm my-1"></i>
-                    </div>
-                `;
+                if (isToday) {
+                    // Current day card with custom vertical fill progress animation
+                    calendarGrid.innerHTML += `
+                        <div class="relative p-2 rounded border flex flex-col items-center justify-between text-center overflow-hidden ring-2 ring-blue-600 dark:ring-blue-400 font-bold ${shift.bgClass} ${shift.borderClass}" title="${shift.name} (Today)">
+                            <div id="today-progress-fill" class="absolute bottom-0 left-0 right-0 bg-blue-500/20 dark:bg-blue-400/25 transition-all duration-1000 ease-linear pointer-events-none" style="height: 0%;"></div>
+                            <span class="relative z-10 text-xs font-black text-blue-700 dark:text-blue-300">${day}</span>
+                            <i class="relative z-10 fas ${shift.icon} ${shift.colorClass} text-sm my-1"></i>
+                        </div>
+                    `;
+                } else {
+                    calendarGrid.innerHTML += `
+                        <div class="p-2 rounded border flex flex-col items-center justify-between text-center transition-colors ${shift.bgClass} ${shift.borderClass}" title="${shift.name}">
+                            <span class="text-xs font-black text-slate-700 dark:text-slate-300">${day}</span>
+                            <i class="fas ${shift.icon} ${shift.colorClass} text-sm my-1"></i>
+                        </div>
+                    `;
+                }
             }
+
+            updateClockAndCountdown();
         }
 
         document.addEventListener('DOMContentLoaded', renderDashboard);
     </script>
 </body>
 </html>
-

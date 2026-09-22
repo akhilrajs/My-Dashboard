@@ -52,6 +52,119 @@
             border-radius: 9999px;
             transition: width 1s ease-in-out, background-color 0.3s;
         }
+
+        /* --- 3D Flip Clock Styles --- */
+        .flip-clock-container {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            perspective: 400px;
+        }
+
+        .flip-group {
+            display: flex;
+            gap: 0.15rem;
+        }
+
+        .flip-unit {
+            position: relative;
+            width: 1.85rem;
+            height: 2.75rem;
+            font-size: 1.5rem;
+            font-weight: 900;
+            line-height: 2.75rem;
+            perspective: 300px;
+        }
+
+        @media (min-width: 768px) {
+            .flip-clock-container {
+                gap: 0.4rem;
+            }
+            .flip-group {
+                gap: 0.25rem;
+            }
+            .flip-unit {
+                width: 2.25rem;
+                height: 3.25rem;
+                font-size: 2rem;
+                line-height: 3.25rem;
+            }
+        }
+
+        .flip-card-leaf {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            overflow: hidden;
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
+        }
+
+        /* Top Half */
+        .flip-card-top, .flip-leaf-top {
+            top: 0;
+            transform-origin: 50% 100%;
+            border-top-left-radius: 0.375rem;
+            border-top-right-radius: 0.375rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+        }
+
+        /* Bottom Half */
+        .flip-card-bottom, .flip-leaf-bottom {
+            bottom: 0;
+            transform-origin: 50% 0%;
+            border-bottom-left-radius: 0.375rem;
+            border-bottom-right-radius: 0.375rem;
+        }
+
+        /* Number rendering inside halves */
+        .flip-card-leaf span {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 200%;
+            text-align: center;
+        }
+
+        .flip-card-top span, .flip-leaf-top span {
+            top: 0;
+        }
+
+        .flip-card-bottom span, .flip-leaf-bottom span {
+            bottom: 0;
+        }
+
+        /* Flip Keyframes */
+        .flip-leaf-top.flipping {
+            animation: flipTop 0.25s ease-in forwards;
+        }
+
+        .flip-leaf-bottom.flipping {
+            animation: flipBottom 0.25s ease-out 0.25s forwards;
+        }
+
+        @keyframes flipTop {
+            0% { transform: rotateX(0deg); }
+            100% { transform: rotateX(-90deg); }
+        }
+
+        @keyframes flipBottom {
+            0% { transform: rotateX(90deg); }
+            100% { transform: rotateX(0deg); }
+        }
+
+        .flip-colon {
+            font-size: 1.5rem;
+            font-weight: 900;
+            line-height: 1;
+            padding: 0 0.05rem;
+        }
+        @media (min-width: 768px) {
+            .flip-colon {
+                font-size: 2rem;
+            }
+        }
     </style>
 </head>
 <body class="p-4 md:p-8 min-h-screen flex flex-col items-center bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
@@ -72,8 +185,32 @@
                     <span id="current-date">Loading date...</span>
                 </p>
             </div>
-            <div class="text-4xl md:text-5xl font-black tabular-nums tracking-tighter text-slate-800 dark:text-slate-200" id="current-time">
-                00:00:00
+            
+            <!-- Flip Clock Container -->
+            <div class="flex flex-col items-center md:items-end gap-1">
+                <div class="flip-clock-container" id="flip-clock">
+                    <!-- Hours -->
+                    <div class="flip-group">
+                        <div class="flip-unit" id="flip-h1"></div>
+                        <div class="flip-unit" id="flip-h2"></div>
+                    </div>
+                    <div class="flip-colon text-slate-400 dark:text-slate-600">:</div>
+                    <!-- Minutes -->
+                    <div class="flip-group">
+                        <div class="flip-unit" id="flip-m1"></div>
+                        <div class="flip-unit" id="flip-m2"></div>
+                    </div>
+                    <div class="flip-colon text-slate-400 dark:text-slate-600">:</div>
+                    <!-- Seconds -->
+                    <div class="flip-group">
+                        <div class="flip-unit" id="flip-s1"></div>
+                        <div class="flip-unit" id="flip-s2"></div>
+                    </div>
+                    <!-- AM / PM Indicator -->
+                    <div id="flip-ampm" class="ml-1 text-xs md:text-sm font-black px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                        AM
+                    </div>
+                </div>
             </div>
         </header>
 
@@ -267,7 +404,91 @@
             }
         });
 
-        // --- 2. Dynamic Greeting & Real-Time Clock & Daily Countdown ---
+        // --- 2. Flip Clock Engine ---
+        class FlipUnit {
+            constructor(element) {
+                this.element = element;
+                this.currentVal = null;
+                this.init();
+            }
+
+            init() {
+                this.element.innerHTML = `
+                    <div class="flip-card-top bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-700"><span>0</span></div>
+                    <div class="flip-card-bottom bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-100"><span>0</span></div>
+                `;
+                this.topCard = this.element.querySelector('.flip-card-top span');
+                this.bottomCard = this.element.querySelector('.flip-card-bottom span');
+            }
+
+            update(newVal) {
+                if (this.currentVal === newVal) return;
+                
+                if (this.currentVal === null) {
+                    this.currentVal = newVal;
+                    this.topCard.textContent = newVal;
+                    this.bottomCard.textContent = newVal;
+                    return;
+                }
+
+                const oldVal = this.currentVal;
+                this.currentVal = newVal;
+
+                // Create animated leaf elements
+                const leafTop = document.createElement('div');
+                leafTop.className = 'flip-card-leaf flip-leaf-top bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-100 border-slate-300 dark:border-slate-700 flipping';
+                leafTop.innerHTML = `<span>${oldVal}</span>`;
+
+                const leafBottom = document.createElement('div');
+                leafBottom.className = 'flip-card-leaf flip-leaf-bottom bg-slate-200 dark:bg-slate-800 text-slate-800 dark:text-slate-100 flipping';
+                leafBottom.innerHTML = `<span>${newVal}</span>`;
+
+                // Update stationary base numbers
+                this.topCard.textContent = newVal;
+                this.bottomCard.textContent = oldVal;
+
+                this.element.appendChild(leafTop);
+                this.element.appendChild(leafBottom);
+
+                setTimeout(() => {
+                    this.bottomCard.textContent = newVal;
+                    leafTop.remove();
+                    leafBottom.remove();
+                }, 500);
+            }
+        }
+
+        const flipH1 = new FlipUnit(document.getElementById('flip-h1'));
+        const flipH2 = new FlipUnit(document.getElementById('flip-h2'));
+        const flipM1 = new FlipUnit(document.getElementById('flip-m1'));
+        const flipM2 = new FlipUnit(document.getElementById('flip-m2'));
+        const flipS1 = new FlipUnit(document.getElementById('flip-s1'));
+        const flipS2 = new FlipUnit(document.getElementById('flip-s2'));
+        const ampmEl = document.getElementById('flip-ampm');
+
+        function updateFlipClock(now) {
+            let hours = now.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // convert 0 to 12
+
+            const hStr = String(hours).padStart(2, '0');
+            const mStr = String(now.getMinutes()).padStart(2, '0');
+            const sStr = String(now.getSeconds()).padStart(2, '0');
+
+            flipH1.update(hStr[0]);
+            flipH2.update(hStr[1]);
+            flipM1.update(mStr[0]);
+            flipM2.update(mStr[1]);
+            flipS1.update(sStr[0]);
+            flipS2.update(sStr[1]);
+            
+            if (ampmEl.textContent !== ampm) {
+                ampmEl.textContent = ampm;
+            }
+        }
+
+        // --- 3. Dynamic Greeting & Real-Time Clock & Daily Countdown ---
         function updateClockAndCountdown() {
             const now = new Date();
             
@@ -281,9 +502,8 @@
             }
             document.getElementById('greeting-header').textContent = greeting;
 
-            // Clock Output
-            const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-            document.getElementById('current-time').textContent = now.toLocaleTimeString('en-US', timeOptions);
+            // Update Flip Clock
+            updateFlipClock(now);
             
             const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
             document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', dateOptions);
@@ -312,7 +532,7 @@
         }
         setInterval(updateClockAndCountdown, 1000);
 
-        // --- 3. Configuration & State ---
+        // --- 4. Configuration & State ---
         const JOIN_DATE = new Date(2025, 7, 28); 
         const END_DATE = new Date(2028, 7, 28);   
         
@@ -374,7 +594,7 @@
             return stats;
         }
 
-        // --- 4. Render Interface ---
+        // --- 5. Render Interface ---
         function renderDashboard() {
             const stats = calculateMetrics();
             

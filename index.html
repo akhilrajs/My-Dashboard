@@ -242,8 +242,64 @@
             </section>
         </div>
 
-        <!-- NEW SECTION: Journal Literature Box -->
+        <!-- NEW SECTION: Stock Tracker & Journal Literature Box -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+            <!-- Adani Ports Stock Position Card -->
+            <section class="flat-card p-6 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded flex items-center justify-center border bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-700/50">
+                                <i class="fas fa-chart-line text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-base font-black tracking-tight text-slate-900 dark:text-slate-100">Adani Ports & SEZ Ltd</h2>
+                                <p class="text-xs font-bold text-slate-500 dark:text-slate-400">NSE: ADANIPORTS • INR</p>
+                            </div>
+                        </div>
+                        <button id="refresh-stock-btn" onclick="fetchAdaniPortsStock()" class="p-2 rounded border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors" title="Refresh Stock Price">
+                            <i id="stock-refresh-icon" class="fas fa-sync-alt text-xs"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-5 rounded border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 my-4">
+                        <div class="flex justify-between items-baseline mb-2">
+                            <span class="text-3xl font-black tabular-nums tracking-tight text-slate-900 dark:text-white" id="stock-price">₹ --.--</span>
+                            <span id="stock-change-pill" class="px-2.5 py-1 text-xs font-black rounded border flex items-center gap-1 bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600">
+                                <i class="fas fa-minus text-[10px]"></i> <span>--</span>
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 pt-3 border-t border-slate-200 dark:border-slate-700 text-xs font-bold">
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 dark:text-slate-400">Day High:</span>
+                                <span class="text-slate-800 dark:text-slate-200" id="stock-high">₹ --</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 dark:text-slate-400">Day Low:</span>
+                                <span class="text-slate-800 dark:text-slate-200" id="stock-low">₹ --</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 dark:text-slate-400">Prev. Close:</span>
+                                <span class="text-slate-800 dark:text-slate-200" id="stock-prev-close">₹ --</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-slate-500 dark:text-slate-400">Market Status:</span>
+                                <span class="text-slate-800 dark:text-slate-200 uppercase" id="stock-market-status">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                    <span id="stock-last-updated"><i class="far fa-clock mr-1"></i> Updated: --</span>
+                    <a href="https://www.nseindia.com/get-quotes/equity?symbol=ADANIPORTS" target="_blank" rel="noopener noreferrer" class="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-1">
+                        NSE India <i class="fas fa-external-link-alt text-[9px]"></i>
+                    </a>
+                </div>
+            </section>
+
             <!-- Latest Article: Journal of Emergency Medicine Card -->
             <section class="flat-card p-6 bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 flex flex-col justify-between">
                 <div>
@@ -258,6 +314,7 @@
                     </div>
 
                     <p class="text-xs text-slate-600 dark:text-slate-400 font-medium mb-4 leading-relaxed">
+                        Access peer-reviewed research, clinical reviews, and recent issue publications from <strong>The Journal of Emergency Medicine (JEM)</strong> directly via ScienceDirect.
                     </p>
 
                     <div class="space-y-2 mb-4">
